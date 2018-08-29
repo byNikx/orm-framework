@@ -1,0 +1,14 @@
+{
+    "location": "local",
+    "properties": [
+        {
+            "name": "testSession",
+            "location": "session",
+            "writable": false
+        },
+        {
+            "name": "testlocal",
+            "location": "local"
+        }
+    ]
+}
