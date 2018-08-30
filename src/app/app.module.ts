@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { ClientStorageModule } from './client-storage/client-storage.module';
 import { TestComponent } from './components/test/test.component';
+import { AppRoutingModule } from './app-routing.module';
 
 const CONFIG = {
   "location": "local",
@@ -27,7 +28,8 @@ const CONFIG = {
   ],
   imports: [
     BrowserModule,
-    ClientStorageModule
+    ClientStorageModule.config(CONFIG),
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
