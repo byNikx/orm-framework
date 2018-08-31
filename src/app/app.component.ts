@@ -9,6 +9,7 @@ import { StorageService } from './client-storage/services/storage.service';
 export class AppComponent {
   title = 'app';
   constructor(public storage: StorageService) {
-
+    //    this.storage['testlocal'] = 22222222;
+    console.log(this.storage['testSession']);
   }
 }

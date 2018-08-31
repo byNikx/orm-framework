@@ -16,7 +16,6 @@ export class TestComponent implements OnInit {
   }
 
   test() {
-    this.counter = this.storage.counter;
   }
 
 }

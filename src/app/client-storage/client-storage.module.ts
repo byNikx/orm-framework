@@ -1,8 +1,8 @@
 import { NgModule, ModuleWithProviders, InjectionToken } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StorageService } from './services/storage.service';
+import { STORAGE_PROVIDER, CONFIG } from './client-storage.config';
 
-export const STORAGE_API = new InjectionToken('STORAGE_API');
+
 
 @NgModule({
   imports: [
@@ -13,31 +13,32 @@ export const STORAGE_API = new InjectionToken('STORAGE_API');
 })
 
 export class ClientStorageModule {
+
+
+
   static config(config: any): ModuleWithProviders<ClientStorageModule> {
 
     return {
       ngModule: ClientStorageModule,
       providers: [
+        STORAGE_PROVIDER,
         {
-          provide: STORAGE_API,
-          multi: true,
-          useClass: StorageService
-        },
-        generateGetterSetter(config),
+          provide: CONFIG,
+          useValue: config
+        }
       ]
     };
   }
 }
 
 
-export function generateGetterSetter(config): any {
-  //  const getterSetter = {};
+export function getterSettersProvider(config) {
 
-  return {
-    provide: STORAGE_API,
-    multi: true,
-    useValue: {}
-  };
+  // return {
+  //   provide: STORAGE_API,
+  //   multi: true,
+  //   useValue: {}
+  // };
 }
 
 

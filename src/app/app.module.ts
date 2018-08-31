@@ -11,11 +11,13 @@ const CONFIG = {
   "properties": [
     {
       "name": "testSession",
+      "value": 112312,
       "location": "session",
-      "writable": false
+      "readonly": true
     },
     {
       "name": "testlocal",
+      "value": 2,
       "location": "local"
     }
   ]

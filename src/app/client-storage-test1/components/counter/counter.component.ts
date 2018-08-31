@@ -16,7 +16,6 @@ export class CounterComponent implements OnInit {
   }
 
   test() {
-    this.counter = this.storage.counter;
   }
 
 }
