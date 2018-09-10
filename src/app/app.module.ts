@@ -2,23 +2,23 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { ClientStorageModule } from './client-storage/client-storage.module';
+import { ClientStorageModule, StorageConfig, StorageType } from './client-storage/client-storage.module';
 import { TestComponent } from './components/test/test.component';
 import { AppRoutingModule } from './app-routing.module';
 
-const CONFIG = {
-  "location": "local",
-  "properties": [
+const CONFIG: StorageConfig = {
+  location: StorageType.Session,
+  namespace: 'app',
+  encryption: true,
+  properties: [
     {
-      "name": "testSession",
-      "value": 112312,
-      "location": "session",
-      "readonly": true
+      name: 'testSession',
+      readonly: true,
+      value: 1234
     },
     {
-      "name": "testlocal",
-      "value": 2,
-      "location": "local"
+      name: 'testlocal',
+      value: 2,
     }
   ]
 };
