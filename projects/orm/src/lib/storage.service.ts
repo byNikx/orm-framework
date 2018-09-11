@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { StorageType, StorageEntry } from '../client-storage.interface';
+import { StorageType, StorageEntry } from './client-storage.interface';
 
 declare const Object: any;
 

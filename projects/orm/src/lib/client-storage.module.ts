@@ -1,8 +1,8 @@
 import { NgModule, ModuleWithProviders, InjectionToken, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { STORAGE_PROVIDER, CONFIG, STORAGE_API } from './client-storage.config';
-import { StorageService } from './services/storage.service';
-import { WindowService } from './services/window.service';
+import { StorageService } from './storage.service';
+import { WindowService } from './window.service';
 
 
 

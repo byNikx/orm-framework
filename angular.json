@@ -121,6 +121,46 @@
           }
         }
       }
+    },
+    "orm": {
+      "root": "projects/orm",
+      "sourceRoot": "projects/orm/src",
+      "projectType": "library",
+      "prefix": "nx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/orm/tsconfig.lib.json",
+            "project": "projects/orm/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/orm/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/orm/src/test.ts",
+            "tsConfig": "projects/orm/tsconfig.spec.json",
+            "karmaConfig": "projects/orm/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/orm/tsconfig.lib.json",
+              "projects/orm/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "orm-framework"
