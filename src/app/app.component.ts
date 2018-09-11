@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { StorageService } from 'orm';
+import { StorageService } from '@nikx/orm';
 
 @Component({
   selector: 'app-root',

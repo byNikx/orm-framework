@@ -1,6 +1,16 @@
 {
-  "name": "orm",
+  "name": "@nikx/orm",
+  "author": "Nadeem Ahmad",
+  "keywords": [
+    "angular",
+    "session storage",
+    "client storage",
+    "javascript",
+    "local storage"
+  ],
+  "license": "MIT",
   "version": "0.0.1",
+  "description": "A simple storage module that offers easy way to store and retrieve data from client storage.",
   "peerDependencies": {
     "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
     "@angular/core": "^6.0.0-rc.0 || ^6.0.0"

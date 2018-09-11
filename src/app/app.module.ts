@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { TestComponent } from './components/test/test.component';
 import { AppRoutingModule } from './app-routing.module';
-import { ClientStorageModule, StorageConfig, StorageType } from 'orm';
+import { ClientStorageModule, StorageConfig, StorageType } from '@nikx/orm';
 
 const CONFIG: StorageConfig = {
   location: StorageType.Session,
