@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { StorageService } from '@nikx/orm';
+import { StorageService } from '../../projects/orm/src/public_api';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +9,7 @@ import { StorageService } from '@nikx/orm';
 export class AppComponent {
   title = 'app';
   constructor(@Inject(StorageService) public storage: any) {
-    console.log(this.storage);
+    //    console.log(this.storage.testlocal.remove);
   }
   update(e) {
     this.storage.testlocal = e.target.value;

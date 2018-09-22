@@ -2,9 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { TestComponent } from './components/test/test.component';
 import { AppRoutingModule } from './app-routing.module';
-import { ClientStorageModule, StorageConfig, StorageType } from '@nikx/orm';
+import { ClientStorageModule, StorageConfig, StorageType } from '../../projects/orm/src/public_api';
 
 const CONFIG: StorageConfig = {
   location: StorageType.Session,
@@ -26,12 +25,10 @@ const CONFIG: StorageConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    TestComponent,
   ],
   imports: [
     BrowserModule,
     ClientStorageModule.config(CONFIG),
-    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

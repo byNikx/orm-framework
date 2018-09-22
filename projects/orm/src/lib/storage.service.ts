@@ -19,7 +19,7 @@ export class StorageService {
     private _storageApi: any,
     private _windowRef: any
   ) {
-    console.log(this._config, this._storageApi, this._windowRef);
+    // console.log(this._config, this._storageApi, this._windowRef);
     const storageType: StorageType = this._config.location || StorageType.Local;
     const storage = {
       session: this._sessionStorage(),
@@ -30,8 +30,15 @@ export class StorageService {
       decrypt: this._config.decrypt || this._crypto().decrypt
     };
 
+    // this._storageApi.removeKey = (key: string) => {
+    //   console.log(`Removing ${key}`);
+    // }
 
     this._config.properties.forEach((property: StorageEntry, index) => {
+      // If property name is undefined or null then stop
+      if (!property.name) {
+        throw new TypeError(`${property.name} is not a valid property name.`);
+      }
       const descriptor = {
         enumerable: true,
         set: (value) => {
@@ -53,6 +60,10 @@ export class StorageService {
         }
       };
       Object.defineProperty(this._storageApi, property.name, descriptor);
+      this._storageApi[property.name].__proto__.remove = () => {
+        console.log(`Removing key ${property.name}`);
+      };
+      //      console.log(this._storageApi[property.name].__proto__.remove);
       if (property.readonly) {
         if (property.value) {
           storage[storageType].save(property.name, property.value, this._config.namespace);
@@ -70,7 +81,7 @@ export class StorageService {
   }
 
   /**
-   * A private factory that provides methods for
+   * A private module that provides methods for
    * encryption and decryption.
    */
   private _crypto() {
@@ -92,6 +103,14 @@ export class StorageService {
     const storage = this._windowRef.nativeWindow.sessionStorage;
     if (!storage) {
       throw new ReferenceError('Session storage is not available.');
+    }
+
+    function generateKey(key: string, namespace: string) {
+      let keyOutput = key;
+      if (namespace) {
+        keyOutput = [namespace, key].join('.');
+      }
+      return keyOutput;
     }
 
     return {
@@ -134,6 +153,9 @@ export class StorageService {
         } else {
           return rawValue;
         }
+      },
+      remove(key: string, namespace?: string) {
+
       }
 
     };

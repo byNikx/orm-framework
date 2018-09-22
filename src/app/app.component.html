@@ -1,3 +1,5 @@
 <input type="text" (input)="update($event)"/>
 
-{{(this.storage.testlocal) | json}}
+{{(storage.testlocal) | json}}
+<hr/>
+<button (click)="storage.testlocal.remove()">Remove</button>
