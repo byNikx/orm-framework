@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { ClientStorageModule, StorageConfig, StorageType } from '../../projects/orm/src/public_api';
+import { ClientStorageModule, StorageConfig, StorageType, Encryption } from '../../projects/orm/src/public_api';
 
 const CONFIG: StorageConfig = {
-  location: StorageType.Session,
+  storage: StorageType.Session,
   namespace: 'app',
   encryption: true,
   properties: [

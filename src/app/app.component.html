@@ -1,5 +1,6 @@
-<input type="text" (input)="update($event)"/>
+<input type="text" (input)="update($event)" />
 
 {{(storage.testlocal) | json}}
-<hr/>
-<button (click)="storage.testlocal.remove()">Remove</button>
+<hr />
+<button (click)="storage.clear()">Clear Storage</button>
+<button (click)="storage.testlocal.remove()">Remove Property</button>

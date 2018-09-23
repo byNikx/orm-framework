@@ -1,83 +1,129 @@
 import { Injectable } from '@angular/core';
-import { StorageType, StorageEntry } from './client-storage.interface';
+import { StorageType, StorageEntry, StorageConfig } from './client-storage.interface';
 
 declare const Object: any;
-
+export enum JSTypes {
+  String = 'string',
+  Object = 'object',
+  Number = 'number',
+  Boolean = 'boolean',
+  Array = 'array'
+}
 @Injectable()
 export class StorageService {
-  private _api: any;
 
+  // Api container
+  private _api: any;
   get api(): any {
     return this._api;
   }
-
   set api(api: any) {
     this._api = api;
   }
+
+  private _config: StorageConfig;
+  get config(): StorageConfig {
+    return this._config;
+  }
+  set config(config: StorageConfig) {
+    this._config = config;
+  }
+
   constructor(
-    private _config: any,
+    _storageConfig: any,
     private _storageApi: any,
     private _windowRef: any
   ) {
-    // console.log(this._config, this._storageApi, this._windowRef);
-    const storageType: StorageType = this._config.location || StorageType.Local;
+    this.config = _storageConfig;
+    const globalStorage: StorageType = this.config.storage || StorageType.Session;
+
+    // Configure cryptographic functions
+    const crypto = {
+      encrypt: this.config.encrypt || this._crypto().encrypt,
+      decrypt: this.config.decrypt || this._crypto().decrypt
+    };
+
     const storage = {
       session: this._sessionStorage(),
-      local: null
-    };
-    const crypto = {
-      encrypt: this._config.encrypt || this._crypto().encrypt,
-      decrypt: this._config.decrypt || this._crypto().decrypt
+      local: this._localStorage(),
+      active: new Set([])
     };
 
-    // this._storageApi.removeKey = (key: string) => {
-    //   console.log(`Removing ${key}`);
-    // }
+    _storageApi.clear = (): void => {
+      storage.active.forEach((type: StorageType) => {
+        storage[type].clear();
+      });
+    };
+    this.config.properties.forEach((property: StorageEntry, index) => {
 
-    this._config.properties.forEach((property: StorageEntry, index) => {
       // If property name is undefined or null then stop
       if (!property.name) {
         throw new TypeError(`${property.name} is not a valid property name.`);
       }
+
+      // Setting up active storage
+      let activeStorage = globalStorage;
+      if (property.storage) {
+        activeStorage = property.storage;
+      }
+      storage.active.add(activeStorage);
+
       const descriptor = {
         enumerable: true,
         set: (value) => {
           if (property.readonly) {
             throw new TypeError(`Cannot assign to readonly property '${property.name}'.`);
           } else {
-            if (this._config.encryption) {
-              value = crypto.encrypt(value);
+            const payload = {
+              value,
+              type: typeof value
+            };
+            if (this.config.encryption) {
+              if (typeof value === 'object') {
+                value = JSON.stringify(value);
+              }
+              payload.value = crypto.encrypt(value);
             }
-            storage[storageType].save(property.name, value, this._config.namespace);
+            storage[activeStorage].save(property.name, payload, this.config.namespace);
           }
         },
         get: () => {
-          let value = storage[storageType].get(property.name, this._config.namespace);
-          if (value && this._config.encryption) {
-            value = crypto.decrypt(value);
+          const item: { type: any, value: any } = storage[activeStorage].get(property.name, this.config.namespace);
+          if (item) {
+            if (this.config.encryption) {
+              item.value = crypto.decrypt(item.value);
+            }
+            return this._getTrueValue(item);
           }
-          return value;
+          return item;
         }
       };
-      Object.defineProperty(this._storageApi, property.name, descriptor);
-      this._storageApi[property.name].__proto__.remove = () => {
-        console.log(`Removing key ${property.name}`);
-      };
-      //      console.log(this._storageApi[property.name].__proto__.remove);
+      Object.defineProperty(_storageApi, property.name, descriptor);
       if (property.readonly) {
-        if (property.value) {
-          storage[storageType].save(property.name, property.value, this._config.namespace);
+        let value = property.value;
+        if (value) {
+          const payload = {
+            value,
+            type: typeof value
+          };
+          if (this.config.encryption) {
+            if (typeof value === 'object') {
+              value = JSON.stringify(value);
+            }
+            payload.value = crypto.encrypt(value);
+          }
+          storage[activeStorage].save(property.name, payload, this.config.namespace);
         } else {
           throw new ReferenceError(`Readonly property '${property.name}' must be initialized.`);
         }
       } else {
         if (property.value) {
-          this._storageApi[property.name] = property.value;
+          _storageApi[property.name] = property.value;
         }
       }
     });
 
-    this.api = this._storageApi;
+    this.api = _storageApi;
   }
 
   /**
@@ -95,25 +141,45 @@ export class StorageService {
       }
     };
   }
+
+  /**
+   * A private method that defines helper methods for
+   * local storage.
+   */
+  private _localStorage(): any {
+    const storage = this._windowRef.nativeWindow.localStorage;
+    if (!storage) {
+      throw new ReferenceError('Local storage is not available.');
+    }
+
+    return {
+
+      // Remove all saved data from sessionStorage
+      clear(): void {
+        storage.clear();
+      }
+    };
+  }
+
   /**
    * A private method that defines helper methods for
    * session storage.
    */
-  private _sessionStorage() {
+  private _sessionStorage(): any {
     const storage = this._windowRef.nativeWindow.sessionStorage;
     if (!storage) {
       throw new ReferenceError('Session storage is not available.');
     }
 
-    function generateKey(key: string, namespace: string) {
-      let keyOutput = key;
+    function _generateKey(key: string, namespace: string): string {
       if (namespace) {
-        keyOutput = [namespace, key].join('.');
+        key = [namespace, key].join('.');
       }
-      return keyOutput;
+      return key;
     }
 
     return {
+
       /**
        * Save data to session storage.
        * @param key
@@ -121,41 +187,43 @@ export class StorageService {
        * @param namespace
        */
       save: (key: string, value: any, namespace?: string): void => {
-        value = {
-          value,
-          type: typeof value
-        };
         const parsedValue = JSON.stringify(value);
-        let internalKey = key;
-        if (namespace) {
-          internalKey = [namespace, key].join('.');
-        }
+        const internalKey = _generateKey(key, namespace);
         storage.setItem(internalKey, parsedValue);
       },
+
       /**
        * Fetch data from session storage associated with the key.
        * @param key
        * @param namespace
        */
-      get: (key: string, namespace?: string) => {
-        let internalKey = key;
-        if (namespace) {
-          internalKey = [namespace, key].join('.');
-        }
+      get: (key: string, namespace?: string): any => {
+        const internalKey = _generateKey(key, namespace);
         const rawValue = storage.getItem(internalKey);
         if (rawValue) {
           const json = this._parseJSON(rawValue);
           if (json) {
-            return json.value;
+            return json;
           } else {
-            return rawValue.value;
+            return rawValue;
           }
         } else {
           return rawValue;
         }
       },
-      remove(key: string, namespace?: string) {
 
+      /**
+       * Removes key from session storage.
+       * @param key
+       * @param namespace
+       */
+      remove(key: string, namespace?: string): void {
+
+      },
+
+      // Remove all saved data from sessionStorage
+      clear(): void {
+        storage.clear();
       }
 
     };
@@ -178,6 +246,21 @@ export class StorageService {
       console.log('error while parsing JSON: ', e);
     }
     return false;
+  }
+
+  private _getTrueValue(item: { type: any, value: any }): any {
+    switch (item.type) {
+      case JSTypes.Number:
+        return Number.parseInt(item.value, 10);
+      case JSTypes.String:
+        return item.value;
+      case JSTypes.Boolean:
+        return item.value.toLowerCase() === 'true';
+      case JSTypes.Array:
+        return JSON.parse(item.value);
+      default:
+        return JSON.parse(item.value);
+    }
   }
 
 }
