@@ -1,4 +1,4 @@
-import { StorageService } from './storage.service';
+import { StorageService, _getTrueValue, _parseJSON } from './storage.service';
 import { WindowService } from './window.service';
 import { StorageConfig, StorageType, Encryption } from './client-storage.interface';
 import { toBeArray, toBeNumber, toBeBoolean, toBeString, toBeInstanceOf } from '../custom-matchers.jasmine';
@@ -140,6 +140,28 @@ describe('StorageService', () => {
     const quantity = storageService.quantity;
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1);
     expect(sessionStorage.getItem).toHaveBeenCalledWith('test.quantity');
+  });
+
+  it('should be able to clear session storage via clear() method', () => {
+    spyOn(sessionStorage, 'clear');
+    storageService.clear();
+    expect(sessionStorage.clear).toHaveBeenCalled();
+  });
+
+  describe('Utility method', () => {
+
+    it('_getTrueValue should return value with true type', () => {
+      expect(_getTrueValue({ type: 'number', value: '1234567890' })).toBeNumber();
+    });
+
+    it('_parseJSON should return parsed javaScript object or false', () => {
+      expect(_parseJSON('{"name":"Nadeem", "email":"bdynad@bankdata.dk"}')).toEqual({
+        name: 'Nadeem',
+        email: 'bdynad@bankdata.dk'
+      });
+      expect(_parseJSON('[object]')).toBe(false);
+    });
+
   });
 
 });

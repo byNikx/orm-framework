@@ -45,7 +45,7 @@ export class StorageService {
 
     const storage = {
       session: this._sessionStorage(),
-      local: this._localStorage(),
+      local: null,
       active: new Set([])
     };
 
@@ -93,7 +93,7 @@ export class StorageService {
             if (this.config.encryption) {
               item.value = crypto.decrypt(item.value);
             }
-            return this._getTrueValue(item);
+            return _getTrueValue(item);
           }
           return item;
         }
@@ -146,20 +146,20 @@ export class StorageService {
    * A private method that defines helper methods for
    * local storage.
    */
-  private _localStorage(): any {
-    const storage = this._windowRef.nativeWindow.localStorage;
-    if (!storage) {
-      throw new ReferenceError('Local storage is not available.');
-    }
+  // private _localStorage(): any {
+  //   const storage = this._windowRef.nativeWindow.localStorage;
+  //   if (!storage) {
+  //     throw new ReferenceError('Local storage is not available.');
+  //   }
 
-    return {
+  //   return {
 
-      // Remove all saved data from sessionStorage
-      clear(): void {
-        storage.clear();
-      }
-    };
-  }
+  //     // Remove all saved data from sessionStorage
+  //     clear(): void {
+  //       storage.clear();
+  //     }
+  //   };
+  // }
 
   /**
    * A private method that defines helper methods for
@@ -201,7 +201,7 @@ export class StorageService {
         const internalKey = _generateKey(key, namespace);
         const rawValue = storage.getItem(internalKey);
         if (rawValue) {
-          const json = this._parseJSON(rawValue);
+          const json = _parseJSON(rawValue);
           if (json) {
             return json;
           } else {
@@ -229,38 +229,43 @@ export class StorageService {
     };
   }
 
-  /**
+}
+
+/**
    * Checks if value is parsable JSON string
    * and returns the parsed string if it is,
    * otherwise returns false.
    * @param value
    * @returns prased json object or boolean
    */
-  private _parseJSON(value: string): any {
-    try {
-      const json = JSON.parse(value);
-      if (json && typeof json === 'object') {
-        return json;
-      }
-    } catch (e) {
-      console.log('error while parsing JSON: ', e);
+export function _parseJSON(value: string): any {
+  try {
+    const json = JSON.parse(value);
+    if (json && typeof json === 'object') {
+      return json;
     }
-    return false;
+  } catch (e) {
+    //    console.log('error while parsing JSON: ', e);
   }
+  return false;
+}
 
-  private _getTrueValue(item: { type: any, value: any }): any {
-    switch (item.type) {
-      case JSTypes.Number:
-        return Number.parseInt(item.value, 10);
-      case JSTypes.String:
-        return item.value;
-      case JSTypes.Boolean:
-        return item.value.toLowerCase() === 'true';
-      case JSTypes.Array:
-        return JSON.parse(item.value);
-      default:
-        return JSON.parse(item.value);
-    }
+
+/**
+   * Coverts value from string to it's original type.
+   * @param item
+   */
+export function _getTrueValue(item: { type: any, value: any }): any {
+  switch (item.type) {
+    case JSTypes.Number:
+      return Number.parseInt(item.value, 10);
+    case JSTypes.String:
+      return item.value;
+    case JSTypes.Boolean:
+      return item.value.toLowerCase() === 'true';
+    case JSTypes.Array:
+      return JSON.parse(item.value);
+    default:
+      return JSON.parse(item.value);
   }
-
 }
