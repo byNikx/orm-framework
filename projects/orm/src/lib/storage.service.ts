@@ -54,6 +54,11 @@ export class StorageService {
         storage[type].clear();
       });
     };
+
+    // _storageApi.__proto__.remove = function (param): void {
+    //   console.log('removing', param);
+    // };
+
     this.config.properties.forEach((property: StorageEntry, index) => {
 
       // If property name is undefined or null then stop
@@ -93,7 +98,7 @@ export class StorageService {
             if (this.config.encryption) {
               item.value = crypto.decrypt(item.value);
             }
-            return _getTrueValue(item);
+            return _getTrueValue(item, this.config.encryption);
           }
           return item;
         }
@@ -255,17 +260,27 @@ export function _parseJSON(value: string): any {
    * Coverts value from string to it's original type.
    * @param item
    */
-export function _getTrueValue(item: { type: any, value: any }): any {
+export function _getTrueValue(item: { type: any, value: any }, encryption: boolean = false): any {
   switch (item.type) {
     case JSTypes.Number:
       return Number.parseInt(item.value, 10);
     case JSTypes.String:
       return item.value;
     case JSTypes.Boolean:
-      return item.value.toLowerCase() === 'true';
+      let value = item.value;
+      if (typeof value === JSTypes.String) {
+        value = item.value.toLowerCase();
+      }
+      if (encryption) {
+        return value === 'true';
+      }
+      return value;
     case JSTypes.Array:
       return JSON.parse(item.value);
     default:
-      return JSON.parse(item.value);
+      if (encryption) {
+        return JSON.parse(item.value);
+      }
+      return item.value;
   }
 }

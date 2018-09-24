@@ -73,7 +73,6 @@ describe('StorageService', () => {
     expect(storageServiceCore.config.decrypt).toBeFalsy();
 
     // `price` field should be set to `1234`
-    console.log(storageService.price, storageService.quantity);
     expect(storageService.price).toBe(1234);
 
     // `quantity` field should be set to `2`
@@ -127,12 +126,22 @@ describe('StorageService', () => {
   });
 
 
-  it('should be able to save in session storage', () => {
+  it('should be able to save in session storage with encryption', () => {
     const value = 1982;
+    config.encryption = true;
     spyOn(sessionStorage, 'setItem');
     storageService.quantity = value;
     expect(sessionStorage.setItem).toHaveBeenCalledTimes(1);
     expect(sessionStorage.setItem).toHaveBeenCalledWith('test.quantity', '{"value":"MTk4Mg==","type":"number"}');
+  });
+
+  it('should be able to save in session storage without encryption', () => {
+    const value = 1982;
+    config.encryption = false;
+    spyOn(sessionStorage, 'setItem');
+    storageService.quantity = value;
+    expect(sessionStorage.setItem).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem).toHaveBeenCalledWith('test.quantity', '{"value":1982,"type":"number"}');
   });
 
   it('should be able to fetch data from session storage', () => {
