@@ -98,6 +98,8 @@ describe('StorageService', () => {
 
   });
 
+
+
   it('should preserve `type` of data', () => {
 
     // `number` field should be of type `number`
@@ -155,6 +157,28 @@ describe('StorageService', () => {
     spyOn(sessionStorage, 'clear');
     storageService.clear();
     expect(sessionStorage.clear).toHaveBeenCalled();
+  });
+
+  it('should work without namespace', () => {
+    config.namespace = null;
+    // `number` field should be of type `number`
+    expect(storageService.number).toBeNumber();
+
+    // `string` field should be of type `string`
+    expect(storageService.string).toBeString();
+
+    // `boolean` field should be set to `true`
+    expect(storageService.boolean).toBeBoolean();
+
+    // `array` field should be set to [1,2,3,4, 5]
+    //    expect(storageService.array).toBeArray();
+
+    // Properties of object `{ company: 'Bankdata', email: 'bdynad@bankdata.dk' }
+    // should be accessible via dot and bracket notion both`
+    expect(storageService.object.company).toBe('Bankdata');
+    expect(storageService.object.email).toBe('bdynad@bankdata.dk');
+    expect(storageService.object['company']).toBe('Bankdata');
+    expect(storageService.object['email']).toBe('bdynad@bankdata.dk');
   });
 
   describe('Utility method', () => {

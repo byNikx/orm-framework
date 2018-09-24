@@ -54,10 +54,9 @@ export class StorageService {
         storage[type].clear();
       });
     };
-
-    // _storageApi.__proto__.remove = function (param): void {
-    //   console.log('removing', param);
-    // };
+    _storageApi.__proto__.remove = function (param): void {
+      console.log('removing', param);
+    };
 
     this.config.properties.forEach((property: StorageEntry, index) => {
 

@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
-<testsuite name="Chrome 69.0.3497 (Windows 7.0.0)" package="" timestamp="2018-09-24T10:15:52" id="0" hostname="SIBD20" tests="12" errors="0" failures="0" time="0.06">
+<testsuite name="Chrome 69.0.3497 (Windows 7.0.0)" package="" timestamp="2018-09-24T11:59:26" id="0" hostname="SIBD20" tests="13" errors="0" failures="0" time="0.069">
   <properties>
     <property name="browser.fullName" value="Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"/>
   </properties>
-  <testcase name="ClientStorageModule should create an instance" time="0.003" classname="Chrome_69_0_3497_(Windows_7_0_0).ClientStorageModule"/>
-  <testcase name="ClientStorageModule Storage Factory `storageServiceFactory` should create factory for Storage Service" time="0" classname="Chrome_69_0_3497_(Windows_7_0_0).ClientStorageModule"/>
-  <testcase name="StorageService should be created with provided configuration" time="0.004" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
-  <testcase name="StorageService should preserve `type` of data" time="0.001" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
+  <testcase name="ClientStorageModule should create an instance" time="0.005" classname="Chrome_69_0_3497_(Windows_7_0_0).ClientStorageModule"/>
+  <testcase name="ClientStorageModule Storage Factory `storageServiceFactory` should create factory for Storage Service" time="0.001" classname="Chrome_69_0_3497_(Windows_7_0_0).ClientStorageModule"/>
+  <testcase name="StorageService should be created with provided configuration" time="0.005" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
+  <testcase name="StorageService should preserve `type` of data" time="0.002" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
   <testcase name="StorageService should throw `TypeError` if a new value is assigned to a readonly property" time="0.001" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
   <testcase name="StorageService should be able to save in session storage with encryption" time="0.002" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
-  <testcase name="StorageService should be able to save in session storage without encryption" time="0.001" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
-  <testcase name="StorageService should be able to fetch data from session storage" time="0.002" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
-  <testcase name="StorageService should be able to clear session storage via clear() method" time="0.002" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
+  <testcase name="StorageService should be able to save in session storage without encryption" time="0.002" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
+  <testcase name="StorageService should be able to fetch data from session storage" time="0.003" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
+  <testcase name="StorageService should be able to clear session storage via clear() method" time="0.003" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
+  <testcase name="StorageService should work without namespace" time="0.001" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
   <testcase name="StorageService Utility method _getTrueValue should return value with true type" time="0" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
   <testcase name="StorageService Utility method _parseJSON should return parsed javaScript object or false" time="0.001" classname="Chrome_69_0_3497_(Windows_7_0_0).StorageService"/>
   <testcase name="WindowService should be created" time="0.043" classname="Chrome_69_0_3497_(Windows_7_0_0).WindowService"/>
