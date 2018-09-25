@@ -1,4 +1,4 @@
-import { NgModule, ModuleWithProviders, InjectionToken, inject } from '@angular/core';
+import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { STORAGE_PROVIDER, CONFIG, STORAGE_API } from './client-storage.config';
 import { StorageService } from './storage.service';
@@ -18,7 +18,7 @@ export class ClientStorageModule {
 
 
 
-  static config(config: any): ModuleWithProviders<ClientStorageModule> {
+  static config(config: any): ModuleWithProviders {
 
     return {
       ngModule: ClientStorageModule,
@@ -31,16 +31,27 @@ export class ClientStorageModule {
         },
         {
           provide: StorageService,
-          useFactory: storageServiceFactory
+          useFactory: storageServiceFactory,
+          deps: [
+            CONFIG,
+            STORAGE_API,
+            WindowService
+          ]
         }
       ]
     };
   }
 }
-
-export function storageServiceFactory() {
-  return new StorageService(inject(CONFIG), inject(STORAGE_API), inject(WindowService)).api;
+export function storageServiceFactory(config: any, storageApi: any, windowService: WindowService) {
+  return new StorageService(config, storageApi, windowService).api;
 }
+
+/**
+ * Angular 6.0.x compatible
+ */
+// export function storageServiceFactory1() {
+//   return new StorageService(inject(CONFIG), inject(STORAGE_API), inject(WindowService)).api;
+// }
 
 
 

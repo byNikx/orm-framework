@@ -9,7 +9,6 @@ export enum JSTypes {
   Boolean = 'boolean',
   Array = 'array'
 }
-@Injectable()
 export class StorageService {
 
   // Api container
