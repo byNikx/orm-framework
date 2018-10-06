@@ -1,7 +1,16 @@
 
 export enum StorageType {
-    Local = 'local',
-    Session = 'session'
+    Local = 'localStorage',
+    Session = 'sessionStorage',
+    IndexedDB = 'indexedDB',
+}
+
+export enum JSTypes {
+    String = 'string',
+    Object = 'object',
+    Number = 'number',
+    Boolean = 'boolean',
+    Array = 'array'
 }
 export interface StorageEntry {
     name: string;

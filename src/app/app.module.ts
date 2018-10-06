@@ -8,7 +8,7 @@ import { CounterComponent } from './counter/counter.component';
 import { Counter1Component } from './counter1/counter1.component';
 
 const CONFIG: StorageConfig = {
-  storage: StorageType.Session,
+  storage: StorageType.Local,
   namespace: 'app',
   encryption: true,
   properties: [

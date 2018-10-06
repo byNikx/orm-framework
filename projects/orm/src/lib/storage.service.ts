@@ -1,14 +1,8 @@
-import { Injectable } from '@angular/core';
-import { StorageType, StorageEntry, StorageConfig } from './client-storage.interface';
+import { StorageType, StorageEntry, StorageConfig, JSTypes } from './client-storage.interface';
+import { WindowService } from 'orm/orm';
 
 declare const Object: any;
-export enum JSTypes {
-  String = 'string',
-  Object = 'object',
-  Number = 'number',
-  Boolean = 'boolean',
-  Array = 'array'
-}
+
 export class StorageService {
 
   // Api container
@@ -30,21 +24,21 @@ export class StorageService {
 
   constructor(
     _storageConfig: any,
-    private _storageApi: any,
-    private _windowRef: any
+    _storageApi: any,
+    _windowRef: any
   ) {
     this.config = _storageConfig;
     const globalStorage: StorageType = this.config.storage || StorageType.Session;
 
     // Configure cryptographic functions
     const crypto = {
-      encrypt: this.config.encrypt || this._crypto().encrypt,
-      decrypt: this.config.decrypt || this._crypto().decrypt
+      encrypt: this.config.encrypt || _crypto(_windowRef).encrypt,
+      decrypt: this.config.decrypt || _crypto(_windowRef).decrypt
     };
 
     const storage = {
-      session: this._sessionStorage(),
-      local: null,
+      sessionStorage: _Storage(StorageType.Session, _windowRef),
+      localStorage: _Storage(StorageType.Local, _windowRef),
       active: new Set([])
     };
 
@@ -129,109 +123,108 @@ export class StorageService {
     this.api = _storageApi;
   }
 
-  /**
-   * A private module that provides methods for
-   * encryption and decryption.
-   */
-  private _crypto() {
-    const window = this._windowRef.nativeWindow;
-    return {
-      encrypt(value) {
-        return window.btoa(value);
-      },
-      decrypt(value) {
-        return window.atob(value);
-      }
-    };
+}
+
+/**
+ * A private module that provides methods for
+ * encryption and decryption.
+ */
+export function _crypto(windowRef: WindowService) {
+  const window = windowRef.nativeWindow;
+  return {
+    encrypt(value) {
+      return window.btoa(value);
+    },
+    decrypt(value) {
+      return window.atob(value);
+    }
+  };
+}
+
+/**
+ * A private method that defines helper methods for
+ * session storage.
+ */
+export function _Storage(storageType: StorageType, windowRef: WindowService, debug?: boolean): any {
+  const storage = windowRef.nativeWindow[storageType];
+  if (!storage) {
+    throw new ReferenceError(`Storage type ${storageType} is not available.`);
+  }
+  function _isUsable() {
+    try {
+      storage.setItem('_isUsable', 'usable');
+      storage.removeItem('_isUsable');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  function _generateKey(key: string, namespace: string): string {
+    if (namespace) {
+      key = [namespace, key].join('.');
+    }
+    return key;
   }
 
-  /**
-   * A private method that defines helper methods for
-   * local storage.
-   */
-  // private _localStorage(): any {
-  //   const storage = this._windowRef.nativeWindow.localStorage;
-  //   if (!storage) {
-  //     throw new ReferenceError('Local storage is not available.');
-  //   }
+  if (!_isUsable()) {
+    console.warn(`${storageType} is not usable`);
+    console.warn(`using fallback storage`);
+  }
 
-  //   return {
+  return {
 
-  //     // Remove all saved data from sessionStorage
-  //     clear(): void {
-  //       storage.clear();
-  //     }
-  //   };
-  // }
+    /**
+     * Save data to session storage.
+     * @param key
+     * @param value
+     * @param namespace
+     */
+    save: (key: string, value: any, namespace?: string): void => {
+      const parsedValue = JSON.stringify(value);
+      const internalKey = _generateKey(key, namespace);
+      storage.setItem(internalKey, parsedValue);
+    },
 
-  /**
-   * A private method that defines helper methods for
-   * session storage.
-   */
-  private _sessionStorage(): any {
-    const storage = this._windowRef.nativeWindow.sessionStorage;
-    if (!storage) {
-      throw new ReferenceError('Session storage is not available.');
-    }
-
-    function _generateKey(key: string, namespace: string): string {
-      if (namespace) {
-        key = [namespace, key].join('.');
-      }
-      return key;
-    }
-
-    return {
-
-      /**
-       * Save data to session storage.
-       * @param key
-       * @param value
-       * @param namespace
-       */
-      save: (key: string, value: any, namespace?: string): void => {
-        const parsedValue = JSON.stringify(value);
-        const internalKey = _generateKey(key, namespace);
-        storage.setItem(internalKey, parsedValue);
-      },
-
-      /**
-       * Fetch data from session storage associated with the key.
-       * @param key
-       * @param namespace
-       */
-      get: (key: string, namespace?: string): any => {
-        const internalKey = _generateKey(key, namespace);
-        const rawValue = storage.getItem(internalKey);
-        if (rawValue) {
-          const json = _parseJSON(rawValue);
-          if (json) {
-            return json;
-          } else {
-            return rawValue;
-          }
+    /**
+     * Fetch data from session storage associated with the key.
+     * @param key
+     * @param namespace
+     */
+    get: (key: string, namespace?: string): any => {
+      const internalKey = _generateKey(key, namespace);
+      const rawValue = storage.getItem(internalKey);
+      if (rawValue) {
+        const json = _parseJSON(rawValue);
+        if (json) {
+          return json;
         } else {
           return rawValue;
         }
-      },
-
-      /**
-       * Removes key from session storage.
-       * @param key
-       * @param namespace
-       */
-      remove(key: string, namespace?: string): void {
-
-      },
-
-      // Remove all saved data from sessionStorage
-      clear(): void {
-        storage.clear();
+      } else {
+        return rawValue;
       }
+    },
 
-    };
-  }
+    /**
+     * Removes key from session storage.
+     * @param key
+     * @param namespace
+     */
+    remove(key: string, namespace?: string): void {
 
+    },
+
+    // Remove all saved data from sessionStorage
+    clear(): void {
+      storage.clear();
+    }
+
+  };
+}
+
+export function _locationHashStorage(windowRef: WindowService) {
+  const window = windowRef.nativeWindow;
+  console.log(window);
 }
 
 /**
