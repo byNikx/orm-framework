@@ -1,10 +1,14 @@
-import { StorageType, StorageEntry, StorageConfig, JSTypes } from './client-storage.interface';
-import { WindowService } from 'orm/orm';
+import {
+  StorageType,
+  StorageEntry,
+  StorageConfig,
+  JSTypes
+} from "./client-storage.interface";
+import { WindowService } from "./window.service";
 
 declare const Object: any;
 
 export class StorageService {
-
   // Api container
   private _api: any;
   get api(): any {
@@ -22,18 +26,15 @@ export class StorageService {
     this._config = config;
   }
 
-  constructor(
-    _storageConfig: any,
-    _storageApi: any,
-    _windowRef: any
-  ) {
+  constructor(_storageConfig: any, _storageApi: any, _windowRef: any) {
     this.config = _storageConfig;
-    const globalStorage: StorageType = this.config.storage || StorageType.Session;
+    const globalStorage: StorageType =
+      this.config.storage || StorageType.Session;
 
     // Configure cryptographic functions
     const crypto = {
-      encrypt: this.config.encrypt || _crypto(_windowRef).encrypt,
-      decrypt: this.config.decrypt || _crypto(_windowRef).decrypt
+      encrypt: this.config.encryptFn || _crypto(_windowRef).encrypt,
+      decrypt: this.config.decryptFn || _crypto(_windowRef).decrypt
     };
 
     const storage = {
@@ -47,12 +48,11 @@ export class StorageService {
         storage[type].clear();
       });
     };
-    _storageApi.__proto__.remove = function (param): void {
-      console.log('removing', param);
+    _storageApi.__proto__.remove = function(param): void {
+      console.log("removing", param);
     };
 
     this.config.properties.forEach((property: StorageEntry, index) => {
-
       // If property name is undefined or null then stop
       if (!property.name) {
         throw new TypeError(`${property.name} is not a valid property name.`);
@@ -67,25 +67,34 @@ export class StorageService {
 
       const descriptor = {
         enumerable: true,
-        set: (value) => {
+        set: value => {
           if (property.readonly) {
-            throw new TypeError(`Cannot assign to readonly property '${property.name}'.`);
+            throw new TypeError(
+              `Cannot assign to readonly property '${property.name}'.`
+            );
           } else {
             const payload = {
               value,
               type: typeof value
             };
             if (this.config.encryption) {
-              if (typeof value === 'object') {
+              if (typeof value === "object") {
                 value = JSON.stringify(value);
               }
               payload.value = crypto.encrypt(value);
             }
-            storage[activeStorage].save(property.name, payload, this.config.namespace);
+            storage[activeStorage].save(
+              property.name,
+              payload,
+              this.config.namespace
+            );
           }
         },
         get: () => {
-          const item: { type: any, value: any } = storage[activeStorage].get(property.name, this.config.namespace);
+          const item: { type: any; value: any } = storage[activeStorage].get(
+            property.name,
+            this.config.namespace
+          );
           if (item) {
             if (this.config.encryption) {
               item.value = crypto.decrypt(item.value);
@@ -104,14 +113,20 @@ export class StorageService {
             type: typeof value
           };
           if (this.config.encryption) {
-            if (typeof value === 'object') {
+            if (typeof value === "object") {
               value = JSON.stringify(value);
             }
             payload.value = crypto.encrypt(value);
           }
-          storage[activeStorage].save(property.name, payload, this.config.namespace);
+          storage[activeStorage].save(
+            property.name,
+            payload,
+            this.config.namespace
+          );
         } else {
-          throw new ReferenceError(`Readonly property '${property.name}' must be initialized.`);
+          throw new ReferenceError(
+            `Readonly property '${property.name}' must be initialized.`
+          );
         }
       } else {
         if (property.value) {
@@ -122,7 +137,6 @@ export class StorageService {
 
     this.api = _storageApi;
   }
-
 }
 
 /**
@@ -145,15 +159,19 @@ export function _crypto(windowRef: WindowService) {
  * A private method that defines helper methods for
  * session storage.
  */
-export function _Storage(storageType: StorageType, windowRef: WindowService, debug?: boolean): any {
+export function _Storage(
+  storageType: StorageType,
+  windowRef: WindowService,
+  debug?: boolean
+): any {
   const storage = windowRef.nativeWindow[storageType];
   if (!storage) {
     throw new ReferenceError(`Storage type ${storageType} is not available.`);
   }
   function _isUsable() {
     try {
-      storage.setItem('_isUsable', 'usable');
-      storage.removeItem('_isUsable');
+      storage.setItem("_isUsable", "usable");
+      storage.removeItem("_isUsable");
       return true;
     } catch (e) {
       return false;
@@ -161,7 +179,7 @@ export function _Storage(storageType: StorageType, windowRef: WindowService, deb
   }
   function _generateKey(key: string, namespace: string): string {
     if (namespace) {
-      key = [namespace, key].join('.');
+      key = [namespace, key].join(".");
     }
     return key;
   }
@@ -172,7 +190,6 @@ export function _Storage(storageType: StorageType, windowRef: WindowService, deb
   }
 
   return {
-
     /**
      * Save data to session storage.
      * @param key
@@ -210,15 +227,12 @@ export function _Storage(storageType: StorageType, windowRef: WindowService, deb
      * @param key
      * @param namespace
      */
-    remove(key: string, namespace?: string): void {
-
-    },
+    remove(key: string, namespace?: string): void {},
 
     // Remove all saved data from sessionStorage
     clear(): void {
       storage.clear();
     }
-
   };
 }
 
@@ -228,16 +242,16 @@ export function _locationHashStorage(windowRef: WindowService) {
 }
 
 /**
-   * Checks if value is parsable JSON string
-   * and returns the parsed string if it is,
-   * otherwise returns false.
-   * @param value
-   * @returns prased json object or boolean
-   */
+ * Checks if value is parsable JSON string
+ * and returns the parsed string if it is,
+ * otherwise returns false.
+ * @param value
+ * @returns prased json object or boolean
+ */
 export function _parseJSON(value: string): any {
   try {
     const json = JSON.parse(value);
-    if (json && typeof json === 'object') {
+    if (json && typeof json === "object") {
       return json;
     }
   } catch (e) {
@@ -246,12 +260,14 @@ export function _parseJSON(value: string): any {
   return false;
 }
 
-
 /**
-   * Coverts value from string to it's original type.
-   * @param item
-   */
-export function _getTrueValue(item: { type: any, value: any }, encryption: boolean = false): any {
+ * Coverts value from string to it's original type.
+ * @param item
+ */
+export function _getTrueValue(
+  item: { type: any; value: any },
+  encryption: boolean = false
+): any {
   switch (item.type) {
     case JSTypes.Number:
       return Number.parseInt(item.value, 10);
@@ -263,7 +279,7 @@ export function _getTrueValue(item: { type: any, value: any }, encryption: boole
         value = item.value.toLowerCase();
       }
       if (encryption) {
-        return value === 'true';
+        return value === "true";
       }
       return value;
     case JSTypes.Array:

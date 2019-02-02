@@ -1,5 +1,5 @@
 {
-  "name": "@nikx/orm",
+  "name": "@nikx/storage",
   "author": "Nadeem Ahmad",
   "keywords": [
     "angular",
@@ -9,10 +9,10 @@
     "local storage"
   ],
   "license": "MIT",
-  "version": "0.5.1",
+  "version": "0.5.3",
   "description": "A simple storage module that offers easy way to store and retrieve data from client storage.",
   "peerDependencies": {
-    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
-    "@angular/core": "^6.0.0-rc.0 || ^6.0.0"
+    "@angular/common": ">=6.0.0",
+    "@angular/core": ">=6.0.0"
   }
 }

@@ -1,39 +1,38 @@
-
 export enum StorageType {
-    Local = 'localStorage',
-    Session = 'sessionStorage',
-    IndexedDB = 'indexedDB',
+  Local = "localStorage",
+  Session = "sessionStorage",
+  IndexedDB = "indexedDB"
 }
 
 export enum JSTypes {
-    String = 'string',
-    Object = 'object',
-    Number = 'number',
-    Boolean = 'boolean',
-    Array = 'array'
+  String = "string",
+  Object = "object",
+  Number = "number",
+  Boolean = "boolean",
+  Array = "array"
 }
 export interface StorageEntry {
-    name: string;
-    storage?: StorageType;
-    value?: any;
-    readonly?: boolean;
+  name: string;
+  storage?: StorageType;
+  value?: any;
+  readonly?: boolean;
 }
 
 export interface EncryptionConfig {
-    status: Encryption;
-    encryptionStrategy?: Function;
-    decryptionStrategy?: Function;
+  status: Encryption;
+  encryptionStrategy?: Function;
+  decryptionStrategy?: Function;
 }
 
 export enum Encryption {
-    Enable = 'enable',
-    Disable = 'disable'
+  Enable = "enable",
+  Disable = "disable"
 }
 export interface StorageConfig {
-    encryption?: boolean;
-    encrypt?: Function;
-    decrypt?: Function;
-    namespace?: string;
-    storage: StorageType;
-    properties: StorageEntry[];
+  encryption?: boolean;
+  encryptFn?: Function;
+  decryptFn?: Function;
+  namespace?: string;
+  storage: StorageType;
+  properties: StorageEntry[];
 }
