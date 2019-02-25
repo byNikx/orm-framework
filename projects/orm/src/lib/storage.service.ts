@@ -3,8 +3,8 @@ import {
   StorageEntry,
   StorageConfig,
   JSTypes
-} from "./client-storage.interface";
-import { WindowService } from "./window.service";
+} from './client-storage.interface';
+import { WindowService } from './window.service';
 
 declare const Object: any;
 
@@ -49,7 +49,7 @@ export class StorageService {
       });
     };
     _storageApi.__proto__.remove = function(param): void {
-      console.log("removing", param);
+      console.log('removing', param);
     };
 
     this.config.properties.forEach((property: StorageEntry, index) => {
@@ -78,7 +78,7 @@ export class StorageService {
               type: typeof value
             };
             if (this.config.encryption) {
-              if (typeof value === "object") {
+              if (typeof value === 'object') {
                 value = JSON.stringify(value);
               }
               payload.value = crypto.encrypt(value);
@@ -113,7 +113,7 @@ export class StorageService {
             type: typeof value
           };
           if (this.config.encryption) {
-            if (typeof value === "object") {
+            if (typeof value === 'object') {
               value = JSON.stringify(value);
             }
             payload.value = crypto.encrypt(value);
@@ -170,8 +170,8 @@ export function _Storage(
   }
   function _isUsable() {
     try {
-      storage.setItem("_isUsable", "usable");
-      storage.removeItem("_isUsable");
+      storage.setItem('_isUsable', 'usable');
+      storage.removeItem('_isUsable');
       return true;
     } catch (e) {
       return false;
@@ -179,7 +179,7 @@ export function _Storage(
   }
   function _generateKey(key: string, namespace: string): string {
     if (namespace) {
-      key = [namespace, key].join(".");
+      key = [namespace, key].join('.');
     }
     return key;
   }
@@ -251,7 +251,7 @@ export function _locationHashStorage(windowRef: WindowService) {
 export function _parseJSON(value: string): any {
   try {
     const json = JSON.parse(value);
-    if (json && typeof json === "object") {
+    if (json && typeof json === 'object') {
       return json;
     }
   } catch (e) {
@@ -279,7 +279,7 @@ export function _getTrueValue(
         value = item.value.toLowerCase();
       }
       if (encryption) {
-        return value === "true";
+        return value === 'true';
       }
       return value;
     case JSTypes.Array:

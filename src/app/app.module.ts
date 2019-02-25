@@ -1,30 +1,42 @@
-import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { AppComponent } from "./app.component";
-import { AppRoutingModule } from "./app-routing.module";
-import { ClientStorageModule, StorageConfig, StorageType } from "@nikx/storage"; //"../../projects/orm/src/public_api";
-import { CounterComponent } from "./counter/counter.component";
-import { Counter1Component } from "./counter1/counter1.component";
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import {
+  ClientStorageModule,
+  StorageConfig,
+  StorageType
+} from '../../projects/orm/src/public_api';
+import { CounterComponent } from './counter/counter.component';
+import { Counter1Component } from './counter1/counter1.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {
+  MatButtonModule,
+  MatSidenavModule,
+  MatToolbarModule,
+  MatIconModule,
+  MatDividerModule,
+  MatListModule,
+  MatCardModule,
+  MatFormFieldModule,
+  MatInputModule
+} from '@angular/material';
+//import { StorageService } from "orm/public_api";
 
 const CONFIG: StorageConfig = {
   storage: StorageType.Local,
-  namespace: "app",
+  namespace: 'app',
   encryption: true,
-  encryptFn: function(input) {
-    return input + "encrypted";
-  },
-  decryptFn: function name(input) {
-    return input + "decrypted";
-  },
   properties: [
     {
-      name: "testSession",
+      name: 'testSession',
       readonly: true,
       value: 1234
     },
     {
-      name: "testlocal",
+      name: 'testlocal',
       value: 2,
       storage: StorageType.Session
     }
@@ -36,6 +48,18 @@ const CONFIG: StorageConfig = {
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatDividerModule,
+    MatListModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
     ClientStorageModule.config(CONFIG)
   ],
   providers: [],

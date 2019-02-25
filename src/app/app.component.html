@@ -7,3 +7,38 @@
 <a routerLink="/counter">Counter</a>
 <a routerLink="/counter1">Counter 1</a>
 <router-outlet></router-outlet>
+
+<form
+  [formGroup]="joiningForm"
+  (ngSubmit)="registerUser()"
+  fxLayout="column"
+  fxLayoutAlign="start center"
+>
+  <mat-form-field appearance="outline">
+    <mat-label>Outline form field</mat-label>
+    <input
+      formControlName="username"
+      matInput
+      placeholder="What should we call you?"
+    />
+    <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+    <mat-hint>Hint</mat-hint>
+  </mat-form-field>
+  <br />
+  <!-- <mat-form-field appearance="outline">
+        <mat-label>Enter username</mat-label>
+        <input
+          formControlName="username"
+          matInput
+          placeholder="What should we call you?"
+        />
+        <mat-icon matSuffix>{{
+          !joiningForm.valid
+            ? 'sentiment_dissatisfied'
+            : 'sentiment_very_satisfied'
+        }}</mat-icon>
+      </mat-form-field> -->
+  <button mat-raised-button color="accent" [disabled]="!joiningForm.valid">
+    Enter
+  </button>
+</form>
