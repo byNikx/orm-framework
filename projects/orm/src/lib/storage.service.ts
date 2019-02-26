@@ -48,9 +48,9 @@ export class StorageService {
         storage[type].clear();
       });
     };
-    _storageApi.__proto__.remove = function(param): void {
-      console.log('removing', param);
-    };
+    // _storageApi.remove = function(param): void {
+    //   console.log('removing', param);
+    // };
 
     this.config.properties.forEach((property: StorageEntry, index) => {
       // If property name is undefined or null then stop
@@ -104,6 +104,7 @@ export class StorageService {
           return item;
         }
       };
+      const descriptor1 = {};
       Object.defineProperty(_storageApi, property.name, descriptor);
       if (property.readonly) {
         let value = property.value;

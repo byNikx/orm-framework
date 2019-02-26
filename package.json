@@ -9,7 +9,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "test-coverage": "ng test --code-coverage --project=orm",
-    "publish-lib": "ng build orm && npm publish ./dist/orm --access public"
+    "publish-lib": "ng build orm --prod && npm publish ./dist/orm --access public"
   },
   "private": true,
   "dependencies": {
