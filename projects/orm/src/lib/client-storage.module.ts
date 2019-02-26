@@ -33,17 +33,17 @@ export class ClientStorageModule {
 /**
  * Angula5 5.0.x onwards
  */
-// export function storageServiceFactory(config: any, storageApi: any, windowService: WindowService) {
-//   return new StorageService(config, storageApi, windowService).api;
-// }
+export function storageServiceFactory(config: any, storageApi: any, windowService: WindowService) {
+  return new StorageService(config, storageApi, windowService).api;
+}
 
 /**
  * Angular 6.0.x compatible
  */
-export function storageServiceFactory() {
-  return new StorageService(
-    inject(CONFIG),
-    inject(STORAGE_API),
-    inject(WindowService)
-  ).api;
-}
+// export function storageServiceFactory() {
+//   return new StorageService(
+//     inject(CONFIG),
+//     inject(STORAGE_API),
+//     inject(WindowService)
+//   ).api;
+// }
